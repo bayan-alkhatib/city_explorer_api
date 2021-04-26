@@ -6,7 +6,11 @@ require ('dotenv').config();
 
 const server=express();
 
+const cors =require('cors');
+
 const PORT = process.env.port || 3500;
+
+server.use(cors());
 
 server.listen(PORT,()=>{
   console.log( 'Welcome');
