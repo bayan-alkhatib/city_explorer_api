@@ -4,6 +4,7 @@ const express=require('express');
 
 require ('dotenv').config();
 
+
 const server=express();
 
 const cors =require('cors');
@@ -12,9 +13,6 @@ const PORT = process.env.PORT || 3500;
 
 server.use(cors());
 
-server.listen(PORT,()=>{
-  console.log( 'Welcome');
-});
 
 server.get('/data',(req,res)=>{
   res.send(`you are deploying on heroku ${PORT}`);
@@ -27,7 +25,7 @@ server.get('/location',(req,res)=>{
 });
 
 function Location (locData){
-  this.search_query='seattle';
+  this.search_query='Seattle';
   this.formatted_query=locData[0].display_name;
   this.latitude=locData[0].lat;
   this.longitude=locData[0].lon;
@@ -41,10 +39,10 @@ server.get('/weather',(req,res)=>{
     weatherArr.push(weatherForcast);
   });
   console.log(weatherArr);
-  res.send(weatherData);
+  res.send(weatherArr);
 });
 
-function Weather (value){
+function Weather(value){
   this.forecast=value.weather.description;
   this.time=value.valid_date;
 }
@@ -55,4 +53,8 @@ server.get('*',(req,res)=>{
     resText:'Sorry! Error 500 unexpected condition'
   };
   res.status(500).send(objectEr);
+});
+
+server.listen(PORT,()=>{
+  console.log( `${PORT}`);
 });
