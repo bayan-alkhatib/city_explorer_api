@@ -1,6 +1,9 @@
 {
   "name": "city_explorer_api",
   "version": "1.0.0",
+  "engines": {
+    "node": "12.11.1"
+    },
   "description": "Number and name of feature: ________________________________",
   "main": "server.js",
   "scripts": {
