@@ -8,7 +8,7 @@ const server=express();
 
 const cors =require('cors');
 
-const PORT = process.env.port || 3500;
+const PORT = process.env.PORT || 3500;
 
 server.use(cors());
 
