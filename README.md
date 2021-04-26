@@ -1,67 +1,66 @@
 # city_explorer_api
-Number and name of feature: ________________________________
+Number and name of feature: ____________feature 1____________________
 
-Estimate of time needed to complete: _____
+Estimate of time needed to complete: ____30 min _
 
-Start time: _____
+Start time: 10:00 pm_____
 
-Finish time: _____
+Finish time: ___10:30pm__
 
-Actual time needed to complete: _____
-
-
-Number and name of feature: ________________________________
-
-Estimate of time needed to complete: _____
-
-Start time: _____
-
-Finish time: _____
-
-Actual time needed to complete: _____
+Actual time needed to complete: ___30 min__
 
 
-Number and name of feature: ________________________________
+Number and name of feature: ____________feature 2____________________
 
-Estimate of time needed to complete: _____
+Estimate of time needed to complete: ___30 min__
 
-Start time: _____
+Start time: ___10:45__
 
-Finish time: _____
+Finish time: ___11.15__
 
-Actual time needed to complete: _____
+Actual time needed to complete: ____30 min_
 
 
-Number and name of feature: ________________________________
+Number and name of feature: ________feature 3________________________
 
-Estimate of time needed to complete: _____
+Estimate of time needed to complete: _45 min____
 
-Start time: _____
+Start time: ____12:00_
 
-Finish time: _____
+Finish time: ___12.45__
 
-Actual time needed to complete: _____
+Actual time needed to complete: ___45 min__
+
+
+Number and name of feature: __________feature 4______________________
+
+Estimate of time needed to complete: __20 min___
+
+Start time: __12.45___
+
+Finish time: __1.05___
+
+Actual time needed to complete: __20 min___
 
 
 
 # Project Name
 
-**Author**: Your Name Goes Here
-**Version**: 1.0.0 (increment the patch/fix version number if you make more commits past your first submission)
+**Author**: Bayan-Alkhatib
+**Version**: 1.0.0 
 
 ## Overview
-<!-- Provide a high level overview of what this application is and why you are building it, beyond the fact that it's an assignment for this class. (i.e. What's your problem domain?) -->
-
+App for providing Location and Weather Information to the User.
 ## Getting Started
-<!-- What are the steps that a user must take in order to build this app on their own machine and get it running? -->
+- setting up gethub and heruko accounts 
+- buld it with HTMm CSS and JS for the front end and with node js with its dependencies express,and dotenv.
+- functionalities(weather and location).
+- deploy it on github and heroku.
 
 ## Architecture
-<!-- Provide a detailed description of the application design. What technologies (languages, libraries, etc) you're using, and any other relevant design information. -->
-
+html, css, js, node.js, express.
 ## Change Log
-<!-- Use this area to document the iterative changes made to your application as each feature is successfully implemented. Use time stamps. Here's an examples:
 
-01-01-2001 4:59pm - Application now has a fully-functional express server, with a GET route for the location resource.
+04-26-2021 3:14am - Application now has a not fully-functional needs Deployment.
 
-## Credits and Collaborations
-<!-- Give credit (and a link) to other people or resources that helped you build this application.
+
