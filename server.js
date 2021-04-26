@@ -32,11 +32,9 @@ function Location (locData){
 }
 
 server.get('/weather',(req,res)=>{
-  let weatherArr=[];
   let weatherData= require('./data/weather.json');
-  weatherData.data.forEach(value=>{
-    let weatherForcast= new Weather(value);
-    weatherArr.push(weatherForcast);
+  let weatherArr= weatherData.data.map(value=>{
+    return new Weather(value);
   });
   console.log(weatherArr);
   res.send(weatherArr);
@@ -48,9 +46,9 @@ function Weather(value){
 }
 
 server.get('*',(req,res)=>{
-  let objectEr={
+  let objectEr= {
     status:500,
-    resText:'Sorry! Error 500 unexpected condition'
+    resText:'Sorry! Error 500 unexpected condition',
   };
   res.status(500).send(objectEr);
 });
