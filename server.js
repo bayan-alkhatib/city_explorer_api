@@ -46,8 +46,14 @@ function locationHandeler(req,res){
             let sql =`insert into location values ($1,$2,$3,$4) returning *;`;
             client.query(sql,safeValues);
             res.send(newLocation);
+          }) .catch(error=>{
+            console.log(error);
+            res.send(error);
           });
       }
+    }) .catch(error=>{
+      console.log(error);
+      res.send(error);
     });
 }
 
@@ -128,4 +134,7 @@ client.connect()
       console.log( `${PORT}`);
     });
   });
+// .catch(error=>{;
+//   r.send(error);
+// });
 
