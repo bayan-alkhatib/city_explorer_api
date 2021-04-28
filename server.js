@@ -5,11 +5,13 @@ require ('dotenv').config();
 const cors =require('cors');
 const superAgent=require('superagent');
 const dateFormat=require('dateformat');
+const postgres=require('pg');
 
 
 const server=express();
 const PORT = process.env.PORT || 3500;
 server.use(cors());
+const client=new postgres.Client({connectionString:process.env.DATABASE_URL, SSL:{rejectUnauthorized: false}});
 
 
 
@@ -21,15 +23,30 @@ server.get('*',ErrorHandeler);
 
 function locationHandeler(req,res){
   let cityName=req.query.city;
-  let GEOCODE_API_KEY=process.env.LOCATION_KEY;
-  let locURL=`https://us1.locationiq.com/v1/search.php?key=${GEOCODE_API_KEY}&q=${cityName}&format=json`;
-  superAgent.get(locURL)
-    .then(geoData=>{
-      let gData=geoData.body;
-      let newLocation= new Location(gData,cityName);
-      res.send(newLocation);
-    });
+  let retreivedData=`select * from location where search_query=${cityName};`;
+  if(retreivedData!==null){
+    client.query(retreivedData)
+      .then(result=>{
+        res.send(result.rows);
+      });
+  }else{
+    let GEOCODE_API_KEY=process.env.LOCATION_KEY;
+    let locURL=`https://us1.locationiq.com/v1/search.php?key=${GEOCODE_API_KEY}&q=${cityName}&format=json`;
+    superAgent.get(locURL)
+      .then(geoData=>{
+        let gData=geoData.body;
+        let newLocation= new Location(gData,cityName);
+        let safeValues=[newLocation.search_query,newLocation.formatted_query,newLocation.latitude,newLocation.longitude];
+        let sql =`insert into location values ($1,$2,$3,$4) returning *;`;
+        client.query(sql,safeValues);
+        res.send(newLocation);
+      });
+  }
+  // .catch(error=>{
+  //     res.send(error);
+  // });
 }
+
 
 
 function weatherHandeler(req,res){
@@ -98,7 +115,11 @@ function Park (pValue){
   this.url=pValue.url;
 }
 
-server.listen(PORT,()=>{
-  console.log( `${PORT}`);
-});
+
+client.connect()
+  .then(()=>{
+    server.listen(PORT,()=>{
+      console.log( `${PORT}`);
+    });
+  });
 
