@@ -23,29 +23,35 @@ server.get('*',ErrorHandeler);
 
 function locationHandeler(req,res){
   let cityName=req.query.city;
-  let retreivedData=`select * from location where search_query=${cityName};`;
-  if(retreivedData!==null){
-    client.query(retreivedData)
-      .then(result=>{
-        res.send(result.rows);
-      });
-  }else{
-    let GEOCODE_API_KEY=process.env.LOCATION_KEY;
-    let locURL=`https://us1.locationiq.com/v1/search.php?key=${GEOCODE_API_KEY}&q=${cityName}&format=json`;
-    superAgent.get(locURL)
-      .then(geoData=>{
-        let gData=geoData.body;
-        let newLocation= new Location(gData,cityName);
-        let safeValues=[newLocation.search_query,newLocation.formatted_query,newLocation.latitude,newLocation.longitude];
-        let sql =`insert into location values ($1,$2,$3,$4) returning *;`;
-        client.query(sql,safeValues);
-        res.send(newLocation);
-      });
-  }
-  // .catch(error=>{
-  //     res.send(error);
-  // });
+  let retreivedData=`select * from location where search_query=$1;`;
+  let safeValues=[cityName];
+  client.query(retreivedData,safeValues)
+    .then(result=>{
+      if(result.rows.length){
+        result.rows.forEach(item=>{
+          console.log(item);
+          if(item.search_query===cityName){
+            res.send(item);
+          }
+        });
+      }else{
+        console.log('catch');
+        let GEOCODE_API_KEY=process.env.LOCATION_KEY;
+        let locURL=`https://us1.locationiq.com/v1/search.php?key=${GEOCODE_API_KEY}&q=${cityName}&format=json`;
+        superAgent.get(locURL)
+          .then(geoData=>{
+            let gData=geoData.body;
+            let newLocation= new Location(gData,cityName);
+            let safeValues=[newLocation.search_query,newLocation.formatted_query,newLocation.latitude,newLocation.longitude];
+            let sql =`insert into location values ($1,$2,$3,$4) returning *;`;
+            client.query(sql,safeValues);
+            res.send(newLocation);
+          });
+      }
+    });
 }
+
+
 
 
 
