@@ -133,8 +133,7 @@ client.connect()
     server.listen(PORT,()=>{
       console.log( `${PORT}`);
     });
+  }).catch(error=>{
+    console.log(error);
   });
-// .catch(error=>{;
-//   r.send(error);
-// });
 
