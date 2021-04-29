@@ -18,6 +18,8 @@ const client=new postgres.Client({connectionString:process.env.DATABASE_URL, SSL
 server.get('/location',locationHandeler);
 server.get('/weather',weatherHandeler);
 server.get('/parks',parkHandeler);
+server.get('movies',moviesHandeler);
+server.get('/yelp',resturentHandeler);
 server.get('*',ErrorHandeler);
 
 
@@ -96,6 +98,40 @@ function parkHandeler(req,res){
     });
 }
 
+function moviesHandeler(req,res){
+  let queryName=req.query.query;
+  let MOVIE_API_KEY=process.env.MOVIE_KEY;
+  let movieURL=`https://api.themoviedb.org/3/search/movie?api_key=${MOVIE_API_KEY}&query=${queryName}`;
+  superAgent.get(movieURL)
+    .then(movieData=>{
+      console.log(movieData);
+      let mData=movieData.body.results;
+      let newMovie= new Movies(mData);
+      res.send(newMovie);
+    })
+    .catch(error=>{
+      res.send(error);
+    });
+}
+
+
+function resturentHandeler(req,res){
+  let cityName=req.query.search_query;
+  let YELP_API_KEY=process.env.MOVIE_KEY;
+  let yelpURL=`https://api.yelp.com/v3/businesses/search?location=${cityName}&key=${YELP_API_KEY}`;
+  superAgent.get(yelpURL)
+    .then(yelpData=>{
+      console.log(yelpData);
+      let yData=yelpData.body.map(element=>{
+        return new Resturents (element);
+      });
+      res.send(yData);
+    })
+    .catch(error=>{
+      res.send(error);
+    });
+}
+
 
 function ErrorHandeler (req,res){
   let objectEr= {
@@ -125,6 +161,25 @@ function Park (pValue){
   this.fee='0.00';
   this.description=pValue.description;
   this.url=pValue.url;
+}
+
+function Movies(data){
+  this.title=data[0].title;
+  this.overview=data[0].overview;
+  this.average_votes=data[0].vote_average;
+  this.total_votes=data[0].vote_count;
+  this.image_url=data[0].backdrop_path;
+  this.popularity=data[0].popularity;
+  this.released_on=data[0].release_date;
+}
+
+
+function Resturents (element){
+  this.name=element.alias;
+  this.image_url=element.image_url;
+  this.price=element.url.price;
+  this.rating=element.rating;
+  this.url=element.url;
 }
 
 
