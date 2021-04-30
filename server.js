@@ -18,7 +18,7 @@ const client=new postgres.Client({connectionString:process.env.DATABASE_URL, SSL
 server.get('/location',locationHandeler);
 server.get('/weather',weatherHandeler);
 server.get('/parks',parkHandeler);
-server.get('movies',moviesHandeler);
+server.get('/movies',moviesHandeler);
 server.get('/yelp',resturentHandeler);
 server.get('*',ErrorHandeler);
 
@@ -31,13 +31,11 @@ function locationHandeler(req,res){
     .then(result=>{
       if(result.rows.length){
         result.rows.forEach(item=>{
-          console.log(item);
           if(item.search_query===cityName){
             res.send(item);
           }
         });
       }else{
-        console.log('catch');
         let GEOCODE_API_KEY=process.env.LOCATION_KEY;
         let locURL=`https://us1.locationiq.com/v1/search.php?key=${GEOCODE_API_KEY}&q=${cityName}&format=json`;
         superAgent.get(locURL)
@@ -99,15 +97,15 @@ function parkHandeler(req,res){
 }
 
 function moviesHandeler(req,res){
-  let queryName=req.query.query;
+  let cityName=req.query.search_query;
   let MOVIE_API_KEY=process.env.MOVIE_KEY;
-  let movieURL=`https://api.themoviedb.org/3/search/movie?api_key=${MOVIE_API_KEY}&query=${queryName}`;
+  let movieURL=`https://api.themoviedb.org/3/search/movie?api_key=${MOVIE_API_KEY}&query=${cityName}`;
   superAgent.get(movieURL)
     .then(movieData=>{
-      console.log(movieData);
-      let mData=movieData.body.results;
-      let newMovie= new Movies(mData);
-      res.send(newMovie);
+      let mData=movieData.body.results.map(element=>{
+        return new Movies(element);
+      });
+      res.send(mData);
     })
     .catch(error=>{
       res.send(error);
@@ -117,12 +115,15 @@ function moviesHandeler(req,res){
 
 function resturentHandeler(req,res){
   let cityName=req.query.search_query;
-  let YELP_API_KEY=process.env.MOVIE_KEY;
-  let yelpURL=`https://api.yelp.com/v3/businesses/search?location=${cityName}&key=${YELP_API_KEY}`;
+  let page=req.query.page;
+  const resultPerPage=5;
+  let start=((page-1)*resultPerPage+1);
+  let YELP_API_KEY=process.env.YELP_KEY;
+  let yelpURL=`https://api.yelp.com/v3/businesses/search?location=${cityName}&limit=${resultPerPage}&offset=${start}`;
   superAgent.get(yelpURL)
+    .set('Authorization',`Bearer ${YELP_API_KEY}`)
     .then(yelpData=>{
-      console.log(yelpData);
-      let yData=yelpData.body.map(element=>{
+      let yData=yelpData.body.businesses.map(element=>{
         return new Resturents (element);
       });
       res.send(yData);
@@ -164,20 +165,20 @@ function Park (pValue){
 }
 
 function Movies(data){
-  this.title=data[0].title;
-  this.overview=data[0].overview;
-  this.average_votes=data[0].vote_average;
-  this.total_votes=data[0].vote_count;
-  this.image_url=data[0].backdrop_path;
-  this.popularity=data[0].popularity;
-  this.released_on=data[0].release_date;
+  this.title=data.title;
+  this.overview=data.overview;
+  this.average_votes=data.vote_average;
+  this.total_votes=data.vote_count;
+  this.image_url=data.poster_path;
+  this.popularity=data.popularity;
+  this.released_on=data.release_date;
 }
 
 
 function Resturents (element){
-  this.name=element.alias;
+  this.name=element.name;
   this.image_url=element.image_url;
-  this.price=element.url.price;
+  this.price=element.price;
   this.rating=element.rating;
   this.url=element.url;
 }
