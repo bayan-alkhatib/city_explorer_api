@@ -14,12 +14,11 @@ server.use(cors());
 const client=new postgres.Client({connectionString:process.env.DATABASE_URL, SSL:{rejectUnauthorized: false}});
 
 
-
 server.get('/location',locationHandeler);
 server.get('/weather',weatherHandeler);
 server.get('/parks',parkHandeler);
 server.get('/movies',moviesHandeler);
-server.get('/yelp',resturentHandeler);
+server.get('/yelp',yelpHandeler);
 server.get('*',ErrorHandeler);
 
 
@@ -47,12 +46,10 @@ function locationHandeler(req,res){
             client.query(sql,safeValues);
             res.send(newLocation);
           }) .catch(error=>{
-            console.log(error);
             res.send(error);
           });
       }
     }) .catch(error=>{
-      console.log(error);
       res.send(error);
     });
 }
@@ -87,11 +84,9 @@ function parkHandeler(req,res){
       let pData=parkData.body.data.map(element=>{
         return new Park(element);
       });
-      console.log(pData);
       res.send(pData);
     })
     .catch(error=>{
-      console.log(error);
       res.send(error);
     });
 }
@@ -113,7 +108,7 @@ function moviesHandeler(req,res){
 }
 
 
-function resturentHandeler(req,res){
+function yelpHandeler(req,res){
   let cityName=req.query.search_query;
   let page=req.query.page;
   const resultPerPage=5;
@@ -124,7 +119,7 @@ function resturentHandeler(req,res){
     .set('Authorization',`Bearer ${YELP_API_KEY}`)
     .then(yelpData=>{
       let yData=yelpData.body.businesses.map(element=>{
-        return new Resturents (element);
+        return new Yelp(element);
       });
       res.send(yData);
     })
@@ -175,7 +170,7 @@ function Movies(data){
 }
 
 
-function Resturents (element){
+function Yelp (element){
   this.name=element.name;
   this.image_url=element.image_url;
   this.price=element.price;
@@ -187,7 +182,7 @@ function Resturents (element){
 client.connect()
   .then(()=>{
     server.listen(PORT,()=>{
-      console.log( `${PORT}`);
+      console.log( `PORT: ${PORT}`);
     });
   }).catch(error=>{
     console.log(error);
